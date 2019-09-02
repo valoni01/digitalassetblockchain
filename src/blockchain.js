@@ -69,11 +69,12 @@ class Blockchain {
             block.time = new Date().getTime().toString().slice(0,-3)
             if(newHeight > 0) {
                 let previousBlock  = await self.getBlockByHeight(self.height)
-                block.previousblockhash = previousBlock.hash;
+                block.previousBlockHash = previousBlock.hash;
             }
             block.hash = await SHA256(JSON.stringify(block)).toString();
             if(block.hash){
-                self.chain.push(block)
+                self.chain.push(block);
+                self.height = newHeight;
                 resolve(block);
             }
             else{
@@ -126,7 +127,7 @@ class Blockchain {
             else{
               if(bitcoinMessage.verify(message, address, signature)){
                 let newblock = new BlockClass.Block({star:star,address:address});
-                await this._addBlock(newblock)
+                await this._addBlock(newblock);
                 resolve(newblock);
               }
               else{
@@ -206,7 +207,9 @@ class Blockchain {
         let errorLog = [];
         return new Promise(async (resolve, reject) => {
             for(let i = 0; i < self.chain.length; i++){
-                if(!self.chain[i].BlockClass.validate()){
+             let isValid = await self.chain[i].validate();
+              try{
+                if(!isValid){
                     errorLog.push({
                         error: "invalid block",
                         block: self.chain[i]
@@ -218,6 +221,11 @@ class Blockchain {
                         block:self.chain[i].previousBlockHash
                     })
                 }
+              }
+              catch(e){
+                  reject(e)
+              }      
+              
             }
             resolve(errorLog);
         });

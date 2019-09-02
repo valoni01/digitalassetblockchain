@@ -39,12 +39,14 @@ class Block {
         let self = this;
         return new Promise((resolve, reject) => {
              let currentBlockHash = self.hash;
-             self.hash = SHA256(JSON.stringify(self))                      
-            if(currentBlockHash == self.hash){
+             self.hash = null;
+             let newhash = SHA256(JSON.stringify(self)).toString();
+             self.hash = currentBlockHash;                    
+            if(currentBlockHash == newhash){
                 resolve(true);
             }
             else{
-                reject("hash has been tampered")
+                resolve(false)
             }
 
         });
@@ -60,11 +62,10 @@ class Block {
      *     or Reject with an error.
      */
     getBData() {
-          
         let self = this;
         return new Promise((resolve,reject)=>{
             let blockBody = JSON.parse(hex2ascii(self.body));
-            if(!self.previousBlockHash){
+            if(self.previousBlockHash){
                 resolve(blockBody);
             }
             else{

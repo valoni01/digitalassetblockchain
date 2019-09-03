@@ -66,7 +66,7 @@ class Block {
         return new Promise((resolve,reject)=>{
             let blockBody = JSON.parse(hex2ascii(self.body));
             if(self.previousBlockHash){
-                resolve(blockBody);
+                return blockBody;
             }
             else{
                 reject('Block is a genesis block');

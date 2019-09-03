@@ -215,6 +215,7 @@ class Blockchain {
                         block: self.chain[i]
                     })
                 }
+                if(i === 0) continue;
                 if(!self.chain[i].previousBlockHash === self.chain[i - 1 ].hash){
                     errorLog.push({
                         error:'hash unmatch',
